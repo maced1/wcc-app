@@ -19,8 +19,8 @@
             required
           />
           <v-text-field
-            v-model="userId"
-            label="WCA ID"
+            v-model="wca_id"
+            label="WCA ID (optional)"
           />
           <v-text-field
             v-model="password"
@@ -52,27 +52,99 @@
         >
           Register
         </v-btn>
+        <v-alert type="error" v-if="errorMsg">{{ errorMsg }}</v-alert>
+        <v-alert type="success" v-if="successMsg">{{ successMsg }}</v-alert>
       </v-card-actions>
     </v-card>
   </v-container>
 </template>
 
 <script setup>
+
+
+// const name = ref('')
+// const email = ref('')
+// const password = ref('')
+// const confirmPassword = ref('')
+// const showPassword = ref(false)
+// const wca_id = ref('')
+// const errorMsg = ref('')
+// const successMsg = ref('')
+// const valid = ref(false)
+// const form = ref(null)
+
+
+// const register = async () => {
+//   errorMsg.value = ''
+//   successMsg.value = ''
+//   // Validate form
+//   if (!form.value) return
+//   const isValid = await form.value.validate()
+//   if (!isValid) {
+//     errorMsg.value = 'Please fix the errors above.'
+//     return
+//   }
+//   // Simulate registration API call
+//   try {
+//     // Replace with your actual registration API call
+//     // Example:
+//     // await api.register({ name: name.value, email: email.value, wca_id: wca_id.value, password: password.value })
+//     // Simulate success:
+//     successMsg.value = 'Registration successful!'
+//     // Optionally, reset form fields
+//     name.value = ''
+//     email.value = ''
+//     wca_id.value = ''
+//     password.value = ''
+//     confirmPassword.value = ''
+//     form.value.resetValidation()
+//   } catch (err) {
+//     errorMsg.value = 'Registration failed. Please try again.'
+//   }
+// }
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { registerUser } from '@/services/api.js'
+
+const router = useRouter()
 
 const name = ref('')
 const email = ref('')
-const userId = ref('')
 const password = ref('')
-const confirmPassword = ref('')
-const showPassword = ref(false)
-const valid = ref(false)
-const form = ref(null)
+const wca_id = ref('')
 
-function register() {
-  if (form.value.validate()) {
-    // Registration logic here
-    alert('Registered!')
+const errorMsg = ref('')
+const successMsg = ref('')
+
+async function onRegister() {
+  errorMsg.value = ''
+  successMsg.value = ''
+
+  if (!name.value || !email.value || !password.value) {
+    errorMsg.value = 'Name, email, and password are required.'
+    return
+  }
+
+  try {
+    const payload = {
+      name: name.value,
+      email: email.value,
+      password: password.value,
+      wca_id: wca_id.value || null
+    }
+    const { data } = await registerUser(payload)
+    successMsg.value = `Registered! Your user ID is ${data.user.id}.`
+    // Optionally redirect to login page after a short delay:
+    setTimeout(() => {
+      router.push({ name: 'Login' })
+    }, 1200)
+  } catch (err) {
+    console.error(err)
+    if (err.response?.data?.error) {
+      errorMsg.value = err.response.data.error
+    } else {
+      errorMsg.value = 'Unexpected error.'
+    }
   }
 }
 </script>

@@ -4,14 +4,19 @@
  * @type { Object.<string, import("knex").Knex.Config> }
  */
 module.exports = {
-
+  
   development: {
     client: 'sqlite3',
     connection: {
       filename: './dev.sqlite3'
+    },
+    useNullAsDefault: true, // Use `useNullAsDefault` for sqlite3 to suppress warnings
+    migrations: {
+      directory: './migrations'       // (if you’re using migrations)
     }
   },
-
+  
+  
   staging: {
     client: 'postgresql',
     connection: {
