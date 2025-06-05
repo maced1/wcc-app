@@ -2,8 +2,11 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const knex = require('../db');
-
 const router = express.Router();
+//const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+
+const JWT_SECRET = process.env.JWT_SECRET || 'your_secret_key'
 
 // POST /api/users/register
 router.post('/register', async (req, res) => {
@@ -43,35 +46,75 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// POST /api/users/login (basic example)
+
+// router.post('/login', async (req, res) => {
+//   const { email, password } = req.body;
+//   if (!email || !password) {
+//     return res.status(400).json({ error: 'Email and password are required.' });
+//   }
+
+//   try {
+//     const user = await knex('users').where({ email }).first();
+//     if (!user) {
+//       return res.status(401).json({ error: 'Invalid credentials.' });
+//     }
+
+//     const match = await bcrypt.compare(password, user.password);
+//     if (!match) {
+//       return res.status(401).json({ error: 'Invalid credentials.' });
+//     }
+
+//     // For now, just return user info (in practice, issue a JWT or session)
+//     const safeUser = {
+//       id: user.id,
+//       name: user.name,
+//       email: user.email,
+//       wca_id: user.wca_id,
+//     };
+//     return res.json({ user: safeUser });
+//   } catch (err) {
+//     console.error(err);
+//     return res.status(500).json({ error: 'Server error while logging in.' });
+//   }
+// });
+
+// POST /api/users/login
 router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    return res.status(400).json({ error: 'Email and password are required.' });
-  }
+  const { email, password } = req.body
 
   try {
-    const user = await knex('users').where({ email }).first();
+    const user = await knex('users').where({ email }).first()
     if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials.' });
+      return res.status(401).json({ error: 'Invalid email or password' })
     }
 
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) {
-      return res.status(401).json({ error: 'Invalid credentials.' });
+    const passwordMatch = await bcrypt.compare(password, user.password)
+    if (!passwordMatch) {
+      return res.status(401).json({ error: 'Invalid email or password' })
     }
 
-    // For now, just return user info (in practice, issue a JWT or session)
-    const safeUser = {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      wca_id: user.wca_id,
-    };
-    return res.json({ user: safeUser });
+    // ✅ Create JWT token
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      JWT_SECRET,
+      { expiresIn: '1h' }
+    )
+
+    // ✅ Return token and user info
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        wca_id: user.wca_id,
+        created_at: user.created_at
+      }
+    })
+
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: 'Server error while logging in.' });
+    console.error(err)
+    res.status(500).json({ error: 'Server error during login' })
   }
 });
 
