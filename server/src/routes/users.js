@@ -8,6 +8,8 @@ const jwt = require('jsonwebtoken')
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_secret_key'
 
+const verifyToken = require('../middleware/auth')
+
 // POST /api/users/register
 router.post('/register', async (req, res) => {
   const { name, email, password, wca_id } = req.body;
@@ -30,7 +32,8 @@ router.post('/register', async (req, res) => {
       name,
       email,
       password: hashed,
-      wca_id: wca_id || null
+      wca_id: wca_id || null,
+      created_at: knex.fn.now()
     });
 
     // 4. Return created user (omit password)
@@ -41,42 +44,11 @@ router.post('/register', async (req, res) => {
 
     return res.status(201).json({ user: createdUser });
   } catch (err) {
+    console.error(`Error updating user with ID ${user_id}:`, err);
     console.error(err);
     return res.status(500).json({ error: 'Server error while registering user.' });
   }
 });
-
-
-// router.post('/login', async (req, res) => {
-//   const { email, password } = req.body;
-//   if (!email || !password) {
-//     return res.status(400).json({ error: 'Email and password are required.' });
-//   }
-
-//   try {
-//     const user = await knex('users').where({ email }).first();
-//     if (!user) {
-//       return res.status(401).json({ error: 'Invalid credentials.' });
-//     }
-
-//     const match = await bcrypt.compare(password, user.password);
-//     if (!match) {
-//       return res.status(401).json({ error: 'Invalid credentials.' });
-//     }
-
-//     // For now, just return user info (in practice, issue a JWT or session)
-//     const safeUser = {
-//       id: user.id,
-//       name: user.name,
-//       email: user.email,
-//       wca_id: user.wca_id,
-//     };
-//     return res.json({ user: safeUser });
-//   } catch (err) {
-//     console.error(err);
-//     return res.status(500).json({ error: 'Server error while logging in.' });
-//   }
-// });
 
 // POST /api/users/login
 router.post('/login', async (req, res) => {
@@ -125,7 +97,7 @@ router.get('/:user_id', async (req, res) => {
     // Get single user row (no array wrapping)
     const user = await knex('users')
       .where({ id: user_id })
-      .select('id', 'name', 'wca_id', 'created_at')
+      .select('id', 'name', 'email', 'wca_id', 'created_at', 'college_year')
       .first();
 
     if (!user) {
@@ -138,7 +110,6 @@ router.get('/:user_id', async (req, res) => {
     return res.status(500).json({ error: 'Server error fetching user data.' });
   }
 });
-
 
 // GET /api/users/:user_id/records
 router.get('/:user_id/records', async (req, res) => {
@@ -156,6 +127,50 @@ router.get('/:user_id/records', async (req, res) => {
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: 'Server error fetching user records.' });
+  }
+});
+
+// PUT /api/users/:user_id
+router.put('/:user_id', verifyToken, async (req, res) => {
+  const { user_id } = req.params
+  const { name, email, college_year, wca_id } = req.body;
+
+  if (!user_id) {
+    return res.status(400).json({ error: 'User ID is required.' });
+  }
+
+  try {
+    // Optional: Check if the email is already used by another user
+    const existing = await knex('users')
+      .where({ email })
+      .andWhereNot({ id: user_id })
+      .first();
+
+    if (existing) {
+      return res.status(409).json({ error: 'Email already in use by another user.' });
+    }
+
+    // Update user
+    await knex('users')
+      .where({ id: user_id })
+      .update({
+        name,
+        email,
+        college_year,
+        wca_id,
+        updated_at: knex.fn.now()
+      });
+
+    // Fetch and return updated user
+    const updatedUser = await knex('users')
+      .select('id', 'name', 'email', 'college_year', 'wca_id', 'updated_at')
+      .where({ id: user_id })
+      .first();
+
+    return res.status(200).json({ user: updatedUser });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Server error while updating user.' });
   }
 });
 

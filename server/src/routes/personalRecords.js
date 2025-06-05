@@ -4,14 +4,11 @@ const knex = require('../db');
 
 const router = express.Router();
 
-/**
- * NOTE: In a real app, you’d protect these routes so only an authenticated user
- * can insert/update/delete *their own* records. For simplicity, this example skips auth.
- */
+const verifyToken = require('../middleware/auth')
 
 // POST /api/records
 // Body: { user_id, event_code, best_time_ms }
-router.post('/', async (req, res) => {
+router.post('/', verifyToken, async (req, res) => {
   const { user_id, event_code, best_time_ms } = req.body;
   if (!user_id || !event_code || best_time_ms == null) {
     return res.status(400).json({ error: 'user_id, event_code, and best_time_ms are required.' });

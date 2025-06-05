@@ -147,9 +147,9 @@ import { ref, computed } from 'vue'
 
 const activeMasterTab = ref('personal')
 const activeEventTab = ref({
-  personal: '3x3',
-  mock: '3x3',
-  wca: '3x3'
+  personal: '333',
+  mock: '333',
+  wca: '333'
 })
 
 const masterTabs = [
@@ -175,32 +175,42 @@ const masterTabs = [
 
 const wcaEvents = [
   {
-    id: '3x3',
-    name: '3x3x3 Cube',
+    id: '333',
+    name: '3x3',
     icon: 'mdi-cube-outline'
   },
   {
-    id: '2x2',
-    name: '2x2x2 Cube',
+    id: '222',
+    name: '2x2',
     icon: 'mdi-cube'
   },
   {
-    id: '4x4',
-    name: '4x4x4 Cube',
+    id: '444',
+    name: '4x4',
     icon: 'mdi-cube-outline'
   },
   {
-    id: '5x5',
-    name: '5x5x5 Cube',
+    id: '555',
+    name: '5x5',
     icon: 'mdi-cube-outline'
   },
   {
-    id: 'oh',
-    name: '3x3x3 One-Handed',
+    id: '666',
+    name: '6x6',
+    icon: 'mdi-cube-outline'
+  },
+  {
+    id: '777',
+    name: '7x7',
+    icon: 'mdi-cube-outline'
+  },
+  {
+    id: '333oh',
+    name: '3x3 One-Handed',
     icon: 'mdi-hand-back-left'
   },
   {
-    id: 'pyraminx',
+    id: 'pyram',
     name: 'Pyraminx',
     icon: 'mdi-triangle-outline'
   },
@@ -210,7 +220,17 @@ const wcaEvents = [
     icon: 'mdi-rhombus-outline'
   },
   {
-    id: 'megaminx',
+    id: 'clock',
+    name: 'Clock',
+    icon: 'mdi-clock-outline'
+  },
+  {
+    id: 'sq1',
+    name: 'Square 1',
+    icon: 'mdi-square-off'
+  },
+  {
+    id: 'minx',
     name: 'Megaminx',
     icon: 'mdi-hexagon-outline'
   }
@@ -236,7 +256,7 @@ const getTableHeaders = (masterTabId) => {
 // Mock data for different record types
 const mockLeaderboards = {
   personal: {
-    '3x3': [
+    '333': [
       { 
         rank: 1, 
         name: 'Alice Johnson', 
@@ -303,7 +323,7 @@ const mockLeaderboards = {
         ]
       }
     ],
-    '2x2': [
+    '222': [
       { 
         rank: 1, 
         name: 'Bob Smith', 
@@ -346,7 +366,7 @@ const mockLeaderboards = {
     ]
   },
   mock: {
-    '3x3': [
+    '333': [
       { 
         rank: 1, 
         name: 'Alice Johnson', 
@@ -400,7 +420,7 @@ const mockLeaderboards = {
         ]
       }
     ],
-    '2x2': [
+    '222': [
       { 
         rank: 1, 
         name: 'Bob Smith', 
@@ -443,7 +463,7 @@ const mockLeaderboards = {
     ]
   },
   wca: {
-    '3x3': [
+    '333': [
       { 
         rank: 1, 
         name: 'Alice Johnson', 
@@ -490,7 +510,7 @@ const mockLeaderboards = {
         ]
       }
     ],
-    '2x2': [
+    '222': [
       { 
         rank: 1, 
         name: 'Bob Smith', 

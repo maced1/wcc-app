@@ -19,6 +19,7 @@ export const registerUser = payload => API.post('/users/register', payload)
 export const loginUser = payload => API.post('/users/login', payload)
 export const getUserData = userId => API.get(`/users/${userId}`)
 export const getUserRecords = userId => API.get(`/users/${userId}/records`)
+export const updateUserData = (userId, payload) => API.put(`/users/${userId}`, payload)
 
 /** PERSONAL RECORDS **/
 export const addPersonalRecord = payload => API.post('/records', payload)

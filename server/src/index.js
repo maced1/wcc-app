@@ -5,7 +5,6 @@ const cors = require('cors');
 const bodyParser = require('body-parser'); // or use express.json()
 const knex = require('./db');               // your configured Knex instance
 
-
 const usersRouter = require('./routes/users');
 const recordsRouter = require('./routes/personalRecords');
 
