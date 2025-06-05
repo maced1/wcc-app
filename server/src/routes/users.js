@@ -75,6 +75,28 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// GET /api/users/:user_id - Fetches details of a user by their ID
+router.get('/:user_id', async (req, res) => {
+  const { user_id } = req.params;
+  try {
+    // Get single user row (no array wrapping)
+    const user = await knex('users')
+      .where({ id: user_id })
+      .select('id', 'name', 'wca_id', 'created_at')
+      .first();
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    return res.json(user); // Return plain object
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Server error fetching user data.' });
+  }
+});
+
+
 // GET /api/users/:user_id/records
 router.get('/:user_id/records', async (req, res) => {
   const { user_id } = req.params;

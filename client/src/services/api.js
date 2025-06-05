@@ -12,6 +12,10 @@ export function loginUser(payload) {
   return axios.post(`${BASE_URL}/users/login`, payload)
 }
 
+export function getUserData(userId) {
+  return axios.get(`${BASE_URL}/users/${userId}`)
+}
+
 export function getUserRecords(userId) {
   return axios.get(`${BASE_URL}/users/${userId}/records`)
 }

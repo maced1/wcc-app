@@ -68,8 +68,10 @@ async function onLogin() {
     // In a real app you’d store a token or user info in a store:
     localStorage.setItem('currentUser', JSON.stringify(data.user))
 
+   
+    console.log(data)
     // Redirect to a “Dashboard” (where you might add a record)
-    router.push({ name: 'Dashboard', params: { userId: data.user.id } })
+    router.push(`/dashboard/${data.user.id}`)
   } catch (err) {
     console.error(err)
     if (err.response?.status === 401) {

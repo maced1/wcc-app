@@ -37,21 +37,26 @@
             :type="showPassword ? 'text' : 'password'"
             :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
             @click:append="showPassword = !showPassword"
-            :rules="[v => !!v || 'Confirm password', v => v === password || 'Passwords must match']"
+            :rules="[
+              v => !!v || 'Confirm your password',
+              v => v === password || 'Passwords must match'
+            ]"
             required
           />
         </v-form>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn 
-        color="primary" 
-        type="submit"
-        block 
-        @click="register"  
-        :disabled="!valid"
-        >
-          Register
-        </v-btn>
+              </v-card-text>
+              <v-card-actions>
+                <v-form ref="form" v-model="valid" @submit.prevent="onRegister">
+          <!-- all your fields here -->
+          <v-btn 
+            color="primary"
+            type="submit"
+            block
+            :disabled="!valid"
+          >
+            Register
+          </v-btn>
+        </v-form>
         <v-alert type="error" v-if="errorMsg">{{ errorMsg }}</v-alert>
         <v-alert type="success" v-if="successMsg">{{ successMsg }}</v-alert>
       </v-card-actions>
@@ -111,17 +116,23 @@ const router = useRouter()
 const name = ref('')
 const email = ref('')
 const password = ref('')
+const confirmPassword = ref('')
 const wca_id = ref('')
+const showPassword = ref(false)
 
 const errorMsg = ref('')
 const successMsg = ref('')
+const valid = ref(false)
+const form = ref(null)
 
-async function onRegister() {
+const onRegister = async () => {
   errorMsg.value = ''
   successMsg.value = ''
 
-  if (!name.value || !email.value || !password.value) {
-    errorMsg.value = 'Name, email, and password are required.'
+  if (!form.value) return
+  const isValid = await form.value.validate()
+  if (!isValid) {
+    errorMsg.value = 'Please fix the form errors.'
     return
   }
 
@@ -132,11 +143,12 @@ async function onRegister() {
       password: password.value,
       wca_id: wca_id.value || null
     }
+
     const { data } = await registerUser(payload)
     successMsg.value = `Registered! Your user ID is ${data.user.id}.`
-    // Optionally redirect to login page after a short delay:
+
     setTimeout(() => {
-      router.push({ name: 'Login' })
+      router.push({ name: 'login' })
     }, 1200)
   } catch (err) {
     console.error(err)
@@ -147,4 +159,5 @@ async function onRegister() {
     }
   }
 }
+
 </script>
