@@ -147,9 +147,7 @@ const onRegister = async () => {
     const { data } = await registerUser(payload)
     successMsg.value = `Registered! Your user ID is ${data.user.id}.`
 
-    setTimeout(() => {
-      router.push({ name: 'login' })
-    }, 1200)
+    await router.push('/login')
   } catch (err) {
     console.error(err)
     if (err.response?.data?.error) {
