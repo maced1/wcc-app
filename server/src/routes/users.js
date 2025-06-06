@@ -44,7 +44,7 @@ router.post('/register', async (req, res) => {
 
     return res.status(201).json({ user: createdUser });
   } catch (err) {
-    console.error(`Error updating user with ID ${user_id}:`, err);
+    console.error(`Error during registration`, err);
     console.error(err);
     return res.status(500).json({ error: 'Server error while registering user.' });
   }
@@ -121,7 +121,7 @@ router.get('/:user_id/records', async (req, res) => {
     }
     const records = await knex('personal_records')
       .where({ user_id })
-      .select('id', 'event_code', 'best_time_ms', 'created_at')
+      .select('id', 'event_code', 'best_time_ms', 'record_type', 'created_at')
       .orderBy('event_code', 'asc');
     return res.json({ records });
   } catch (err) {
