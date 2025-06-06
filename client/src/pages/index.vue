@@ -171,6 +171,8 @@
 </template>
 
 <script setup>
+console.log(import.meta.env.VITE_API_URL);
+
 import { ref, computed } from 'vue'
 
 const activeMasterTab = ref('personal')
