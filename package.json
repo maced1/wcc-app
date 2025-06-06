@@ -6,7 +6,7 @@
     "heroku-postbuild": "cd client && npm install && npm run build"
   },
   "engines": {
-    "node": ">=18"
+    "node": "22.x"
   },
   "author": "Matthew Siegel",
   "license": "MIT",
