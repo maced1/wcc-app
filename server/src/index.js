@@ -16,7 +16,7 @@ app.use(cors());
 app.use(bodyParser.json()); // parse JSON bodies
 
 //prepare for deployment
-// app.use(express.static(process.cwd() +"'../../client/dist'"))
+app.use(express.static(path.join(__dirname, '../../client/dist')));
 
 // Sync every day at midnight
 const cron = require('node-cron');
@@ -35,12 +35,15 @@ app.use('/api/records', recordsRouter);
 
 app.use('/api/wca-records', wcaRecordsRouter);
 
-// app.listen(3002, () => console.log("Started: "));
 
-const PORT = process.env.PORT || 8080;
+// Catch-all route for Vue Router (SPA)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../client/dist/index.html'));
+});
 
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
 
 // >>> Add this debug middleware at the very end:
