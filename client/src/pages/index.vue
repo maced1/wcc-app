@@ -112,11 +112,19 @@
                     <span class="font-mono">{{ item.average || 'DNF' }}</span>
                   </template>
 
-                  <!-- New template for displaying the date -->
-                  <template v-slot:item.date="{ item }">
+                  <!-- Template for Single Date -->
+                  <template v-slot:item.single_date="{ item }">
                     <div class="text-body-2">
-                      <div>{{ formatDate(item.updated_at) }}</div>
-                      <div class="text-caption text-medium-emphasis">{{ formatTime(item.updated_at) }}</div>
+                      <div>{{ formatDate(item.single_updated_at) }}</div>
+                      <div class="text-caption text-medium-emphasis">{{ formatTime(item.single_updated_at) }}</div>
+                    </div>
+                  </template>
+
+                  <!-- Template for Average Date -->
+                  <template v-slot:item.average_date="{ item }">
+                    <div class="text-body-2">
+                      <div>{{ formatDate(item.average_updated_at) }}</div>
+                      <div class="text-caption text-medium-emphasis">{{ formatTime(item.average_updated_at) }}</div>
                     </div>
                   </template>
 
@@ -244,22 +252,26 @@ const wcaEvents = [
   }
 ]
 
-// Date formatting functions
-const formatDate = (dateString) => {
-  if (!dateString) return 'N/A'
-  return new Date(dateString).toLocaleDateString('en-US', {
+// Date formatting function (Eastern Time)
+const formatDate = (utcString) => {
+  const date = new Date(utcString + 'Z') // Add 'Z' to force UTC interpretation
+  return date.toLocaleString('en-US', {
     year: 'numeric',
     month: 'short',
-    day: 'numeric'
+    day: 'numeric',
+    timeZone: 'America/New_York'
   })
 }
 
-const formatTime = (dateString) => {
-  if (!dateString) return ''
-  return new Date(dateString).toLocaleTimeString('en-US', {
+// Time formatting function (Eastern Time)
+const formatTime = (utcString) => {
+  if (!utcString) return ''
+  const date = new Date(utcString + 'Z') // Ensure UTC format
+  return date.toLocaleTimeString('en-US', {
     hour: '2-digit',
     minute: '2-digit',
-    hour12: true
+    hour12: true,
+    timeZone: 'America/New_York'
   })
 }
 
@@ -268,8 +280,9 @@ const getTableHeaders = (masterTabId) => {
     { title: 'Rank', key: 'rank', sortable: false, width: '80px' },
     { title: 'Name', key: 'name', sortable: true, width: '300px' },
     { title: 'Single', key: 'time', sortable: true, width: '120px' },
+    { title: 'Date Updated', key: 'single_date', sortable: true, width: '130px' },
     { title: 'Average', key: 'average', sortable: true, width: '120px' },
-    { title: 'Date Updated', key: 'date', sortable: true, width: '150px' }
+    { title: 'Date Updated', key: 'average_date', sortable: true, width: '130px' }
   ]
 
   if (masterTabId === 'wca') {
@@ -408,15 +421,21 @@ const getLeaderboardData = (masterTabId, eventId) => {
   const records = liveLeaderboards.value[eventId]
   if (!records) return []
   
-  return records.single.map((rec, index) => ({
-    rank: index + 1,
-    name: rec.name,
-    wcaId: rec.wcaId,
-    time: rec.time,
-    average: records.average.find(r => r.userId === rec.userId)?.time || '–',
-    updated_at: rec.updated_at, // Make sure this field is included from your API
-    solves: []
-  }))
+  return records.single.map((rec, index) => {
+    // Find the corresponding average record for this user
+    const avgRecord = records.average.find(r => r.userId === rec.userId)
+    
+    return {
+      rank: index + 1,
+      name: rec.name,
+      wcaId: rec.wcaId,
+      time: rec.time,
+      average: avgRecord?.time || '–',
+      single_updated_at: rec.updated_at, // Date when single record was set
+      average_updated_at: avgRecord?.updated_at || null, // Date when average record was set
+      solves: []
+    }
+  })
 }
 
 const getCompetitorCount = (masterTabId, eventId) => {

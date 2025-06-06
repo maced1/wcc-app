@@ -241,6 +241,7 @@ async function saveUserInfo() {
     // // Simulate API call
     // await new Promise(resolve => setTimeout(resolve, 1000))
     console.log('API response:', response)
+    alert("Your info has been updated!");
   } catch (error) {
     console.error('Error saving user info:', error)
   } finally {
@@ -269,6 +270,7 @@ async function saveRecords() {
         })
       }
     }
+    alert("Your records have been saved!");
   } catch (error) {
     console.error('Error saving records:', error)
   } finally {
