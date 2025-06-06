@@ -39,7 +39,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { addPersonalRecord } from '@/services/api.js'
+import { updatePersonalRecord } from '@/services/api.js'
 
 const route = useRoute()
 // we assume userId is passed via route param
@@ -65,7 +65,7 @@ async function onAddRecord() {
       event_code: event_code.value,
       best_time_ms: best_time_ms.value
     }
-    const { data } = await addPersonalRecord(payload)
+    const { data } = await updatePersonalRecord(payload)
     successMsg.value = `Record added (ID: ${data.record.id})`
     event_code.value = ''
     best_time_ms.value = null

@@ -15,6 +15,9 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json()); // parse JSON bodies
 
+//prepare for deployment
+// app.use(express.static(process.cwd() +"'../../client/dist'"))
+
 // Sync every day at midnight
 const cron = require('node-cron');
 const { syncAllUsers } = require('./wcaSync');
@@ -32,14 +35,16 @@ app.use('/api/records', recordsRouter);
 
 app.use('/api/wca-records', wcaRecordsRouter);
 
+// app.listen(3002, () => console.log("Started: "));
+
 const PORT = process.env.PORT || 8080;
+
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+});
 
 // >>> Add this debug middleware at the very end:
 app.use((req, res, next) => {
   console.log(`Unhandled request: [${req.method}] ${req.originalUrl}`);
   res.status(404).json({ error: 'Route not found' });
-});
-
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
 });
