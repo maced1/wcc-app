@@ -1,52 +1,26 @@
-// Update with your config settings.
-
 /**
  * @type { Object.<string, import("knex").Knex.Config> }
  */
 module.exports = {
-  
   development: {
     client: 'sqlite3',
     connection: {
       filename: './dev.sqlite3'
     },
-    useNullAsDefault: true, // Use `useNullAsDefault` for sqlite3 to suppress warnings
+    useNullAsDefault: true,
     migrations: {
-      directory: './migrations'       // (if you’re using migrations)
-    }
-  },
-  
-  
-  staging: {
-    client: 'postgresql',
-    connection: {
-      database: 'my_db',
-      user:     'username',
-      password: 'password'
-    },
-    pool: {
-      min: 2,
-      max: 10
-    },
-    migrations: {
-      tableName: 'knex_migrations'
+      directory: './migrations'
     }
   },
 
   production: {
-    client: 'postgresql',
+    client: 'sqlite3',
     connection: {
-      database: 'my_db',
-      user:     'username',
-      password: 'password'
+      filename: './prod.sqlite3'  // separate file for production
     },
-    pool: {
-      min: 2,
-      max: 10
-    },
+    useNullAsDefault: true,
     migrations: {
-      tableName: 'knex_migrations'
+      directory: './migrations'
     }
   }
-
 };
