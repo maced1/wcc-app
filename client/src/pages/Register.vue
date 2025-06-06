@@ -65,48 +65,6 @@
 </template>
 
 <script setup>
-
-
-// const name = ref('')
-// const email = ref('')
-// const password = ref('')
-// const confirmPassword = ref('')
-// const showPassword = ref(false)
-// const wca_id = ref('')
-// const errorMsg = ref('')
-// const successMsg = ref('')
-// const valid = ref(false)
-// const form = ref(null)
-
-
-// const register = async () => {
-//   errorMsg.value = ''
-//   successMsg.value = ''
-//   // Validate form
-//   if (!form.value) return
-//   const isValid = await form.value.validate()
-//   if (!isValid) {
-//     errorMsg.value = 'Please fix the errors above.'
-//     return
-//   }
-//   // Simulate registration API call
-//   try {
-//     // Replace with your actual registration API call
-//     // Example:
-//     // await api.register({ name: name.value, email: email.value, wca_id: wca_id.value, password: password.value })
-//     // Simulate success:
-//     successMsg.value = 'Registration successful!'
-//     // Optionally, reset form fields
-//     name.value = ''
-//     email.value = ''
-//     wca_id.value = ''
-//     password.value = ''
-//     confirmPassword.value = ''
-//     form.value.resetValidation()
-//   } catch (err) {
-//     errorMsg.value = 'Registration failed. Please try again.'
-//   }
-// }
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { registerUser } from '@/services/api.js'
@@ -145,7 +103,7 @@ const onRegister = async () => {
     }
 
     const { data } = await registerUser(payload)
-    successMsg.value = `Registered! Your user ID is ${data.user.id}.`
+    successMsg.value = `Registered! Your user ID is ${data.user.id}. Please login`
 
     await router.push('/login')
   } catch (err) {
