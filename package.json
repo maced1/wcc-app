@@ -1,0 +1,14 @@
+{
+  "name": "wcc-app",
+  "version": "1.0.0",
+  "description": "Wolfpack Cubing Club",
+  "scripts": {
+    "heroku-postbuild": "cd client && npm install && npm run build"
+  },
+  "author": "Matthew Siegel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/maced1/wcc-app/issues"
+  },
+  "homepage": "https://github.com/maced1/wcc-app#readme"
+}

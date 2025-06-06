@@ -2,3 +2,6 @@ dev.sqlite3
 .env
 *.sqlite3
 *.db
+*.env
+client/dist
+node_modules
