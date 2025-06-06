@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Wolfpack Cubing Club",
   "scripts": {
-    "heroku-postbuild": "cd client && npm install && npm run build"
+    "heroku-postbuild": "cd client && npm install && npm run build && cd ../server && npm install"
   },
   "engines": {
     "node": "22.x"
