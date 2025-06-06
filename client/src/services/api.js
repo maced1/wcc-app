@@ -26,3 +26,7 @@ export const updatePersonalRecord = (userId, payload) => API.post(`/records/user
 //export const deletePersonalRecord = recordId => API.delete(`/records/${recordId}`)
 export const getLeaderboardRecords = (eventCode) => API.get(`/records/event/${eventCode}`)
 
+/** WCA RECORDS */
+export const getWcaLeaderboardRecords = (eventCode) => API.get(`/wca-records/${eventCode}`)
+export const getWcaLastSync = () => API.get('/wca-records/last-sync')
+
