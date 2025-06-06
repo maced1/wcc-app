@@ -1,4 +1,5 @@
 // wcc-app/server/src/index.js
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') })
 
 const express = require('express');
 const cors = require('cors');
@@ -7,6 +8,7 @@ const knex = require('./db');               // your configured Knex instance
 
 const usersRouter = require('./routes/users');
 const recordsRouter = require('./routes/personalRecords');
+
 
 const app = express();
 app.use(cors());

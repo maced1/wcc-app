@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken')
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_secret_key'
 
-const verifyToken = require('../middleware/auth')
+const authenticate = require('../middleware/auth')
 
 // POST /api/users/register
 router.post('/register', async (req, res) => {
@@ -131,7 +131,7 @@ router.get('/:user_id/records', async (req, res) => {
 });
 
 // PUT /api/users/:user_id
-router.put('/:user_id', verifyToken, async (req, res) => {
+router.put('/:user_id', authenticate, async (req, res) => {
   const { user_id } = req.params
   const { name, email, college_year, wca_id } = req.body;
 

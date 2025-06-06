@@ -22,7 +22,7 @@ export const getUserRecords = userId => API.get(`/users/${userId}/records`)
 export const updateUserData = (userId, payload) => API.put(`/users/${userId}`, payload)
 
 /** PERSONAL RECORDS **/
-export const addPersonalRecord = payload => API.post('/records', payload)
-export const updatePersonalRecord = (recordId, payload) => API.put(`/records/${recordId}`, payload)
-export const deletePersonalRecord = recordId => API.delete(`/records/${recordId}`)
-export const getLeaderboard = eventCode => API.get(`/records/${eventCode}`)
+export const updatePersonalRecord = (userId, payload) => API.post(`/records/user/${userId}`, payload)
+//export const deletePersonalRecord = recordId => API.delete(`/records/${recordId}`)
+export const getLeaderboardRecords = (eventCode) => API.get(`/records/event/${eventCode}`)
+

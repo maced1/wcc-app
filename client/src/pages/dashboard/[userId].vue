@@ -207,11 +207,18 @@ onMounted(async () => {
     // Update records safely - only if we have records
     if (recordList && recordList.length > 0) {
       recordList.forEach(record => {
-        if (records[record.event]) {
-          records[record.event] = {
-            single: record.single || '',
-            average: record.average || ''
-          }
+        const { event_code, record_type, best_time_ms } = record
+
+        if (!records[event_code]) {
+          records[event_code] = { single: '', average: '' }
+        }
+
+        const timeInSeconds = (best_time_ms / 1000).toFixed(2)
+
+        if (record_type === 'Single') {
+          records[event_code].single = timeInSeconds
+        } else if (record_type === 'Average') {
+          records[event_code].average = timeInSeconds
         }
       })
     }
@@ -244,22 +251,29 @@ async function saveUserInfo() {
 async function saveRecords() {
   try {
     savingRecords.value = true
-    console.log('Saving records:', records)
-    
-    // TODO: Implement records API call
-    // for (const [eventId, record] of Object.entries(records)) {
-    //   if (record.single || record.average) {
-    //     await updatePersonalRecord(userId, eventId, record)
-    //   }
-    // }
-    
-    // Simulate API call
-    // await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
+    //console.log('Sending token:', localStorage.getItem('token'))
+    for (const [eventCode, record] of Object.entries(records)) {
+      if (record.single && !isNaN(record.single)) {
+        await updatePersonalRecord(userId, {
+          event_code: eventCode,
+          record_type: 'Single',
+          best_time_ms: Math.round(parseFloat(record.single) * 1000)  // s to ms
+        })
+      }
+      if (record.average && !isNaN(record.average)) {
+        await updatePersonalRecord(userId, {
+          event_code: eventCode,
+          record_type: 'Average',
+          best_time_ms: Math.round(parseFloat(record.average) * 1000)
+        })
+      }
+    }
   } catch (error) {
     console.error('Error saving records:', error)
   } finally {
     savingRecords.value = false
   }
 }
+
 </script>

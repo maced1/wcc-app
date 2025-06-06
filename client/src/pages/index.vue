@@ -112,6 +112,14 @@
                     <span class="font-mono">{{ item.average || 'DNF' }}</span>
                   </template>
 
+                  <!-- New template for displaying the date -->
+                  <template v-slot:item.date="{ item }">
+                    <div class="text-body-2">
+                      <div>{{ formatDate(item.updated_at) }}</div>
+                      <div class="text-caption text-medium-emphasis">{{ formatTime(item.updated_at) }}</div>
+                    </div>
+                  </template>
+
                   <template v-slot:item.solves="{ item }">
                     <div class="solves-container">
                       <span 
@@ -236,135 +244,44 @@ const wcaEvents = [
   }
 ]
 
+// Date formatting functions
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A'
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  })
+}
+
+const formatTime = (dateString) => {
+  if (!dateString) return ''
+  return new Date(dateString).toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  })
+}
+
 const getTableHeaders = (masterTabId) => {
   const baseHeaders = [
     { title: 'Rank', key: 'rank', sortable: false, width: '80px' },
     { title: 'Name', key: 'name', sortable: true, width: '300px' },
     { title: 'Single', key: 'time', sortable: true, width: '120px' },
-    { title: 'Average', key: 'average', sortable: true, width: '120px' }
+    { title: 'Average', key: 'average', sortable: true, width: '120px' },
+    { title: 'Date Updated', key: 'date', sortable: true, width: '150px' }
   ]
 
   if (masterTabId === 'wca') {
     baseHeaders.push({ title: 'Competition', key: 'competition', sortable: true, width: '200px' })
   }
   
-  baseHeaders.push({ title: 'Solves', key: 'solves', sortable: false, width: '300px' })
-  
   return baseHeaders
 }
 
 // Mock data for different record types
 const mockLeaderboards = {
-  personal: {
-    '333': [
-      { 
-        rank: 1, 
-        name: 'Alice Johnson', 
-        time: '8.24', 
-        average: '10.45', 
-        solves: [
-          { time: '10.45', excluded: false },
-          { time: '11.23', excluded: false },
-          { time: '9.78', excluded: false },
-          { time: '8.24', excluded: true },  // fastest (excluded)
-          { time: '12.34', excluded: true }  // slowest (excluded)
-        ]
-      },
-      { 
-        rank: 2, 
-        name: 'Bob Smith', 
-        time: '9.12', 
-        average: '11.23', 
-        solves: [
-          { time: '11.45', excluded: false },
-          { time: '10.78', excluded: false },
-          { time: '11.46', excluded: false },
-          { time: '9.12', excluded: true },   // fastest (excluded)
-          { time: '13.45', excluded: true }   // slowest (excluded)
-        ]
-      },
-      { 
-        rank: 3, 
-        name: 'Carol Davis', 
-        time: '9.87', 
-        average: '12.01', 
-        solves: [
-          { time: '12.34', excluded: false },
-          { time: '11.89', excluded: false },
-          { time: '11.80', excluded: false },
-          { time: '9.87', excluded: true },   // fastest (excluded)
-          { time: '14.56', excluded: true }   // slowest (excluded)
-        ]
-      },
-      { 
-        rank: 4, 
-        name: 'David Wilson', 
-        time: '10.34', 
-        average: '12.67', 
-        solves: [
-          { time: '12.45', excluded: false },
-          { time: '13.12', excluded: false },
-          { time: '12.45', excluded: false },
-          { time: '10.34', excluded: true },  // fastest (excluded)
-          { time: '15.23', excluded: true }   // slowest (excluded)
-        ]
-      },
-      { 
-        rank: 5, 
-        name: 'Emma Brown', 
-        time: '11.02', 
-        average: '13.45', 
-        solves: [
-          { time: '13.78', excluded: false },
-          { time: '13.45', excluded: false },
-          { time: '13.12', excluded: false },
-          { time: '11.02', excluded: true },  // fastest (excluded)
-          { time: '16.34', excluded: true }   // slowest (excluded)
-        ]
-      }
-    ],
-    '222': [
-      { 
-        rank: 1, 
-        name: 'Bob Smith', 
-        time: '2.45', 
-        average: '3.21', 
-        solves: [
-          { time: '3.12', excluded: false },
-          { time: '3.45', excluded: false },
-          { time: '3.06', excluded: false },
-          { time: '2.45', excluded: true },   // fastest (excluded)
-          { time: '4.23', excluded: true }    // slowest (excluded)
-        ]
-      },
-      { 
-        rank: 2, 
-        name: 'Alice Johnson', 
-        time: '2.78', 
-        average: '3.67', 
-        solves: [
-          { time: '3.89', excluded: false },
-          { time: '3.56', excluded: false },
-          { time: '3.56', excluded: false },
-          { time: '2.78', excluded: true },   // fastest (excluded)
-          { time: '4.78', excluded: true }    // slowest (excluded)
-        ]
-      },
-      { 
-        rank: 3, 
-        name: 'Carol Davis', 
-        time: '3.12', 
-        average: '4.02', 
-        solves: [
-          { time: '4.23', excluded: false },
-          { time: '3.89', excluded: false },
-          { time: '3.94', excluded: false },
-          { time: '3.12', excluded: true },   // fastest (excluded)
-          { time: '5.67', excluded: true }    // slowest (excluded)
-        ]
-      }
-    ]
-  },
+  
   mock: {
     '333': [
       { 
@@ -461,92 +378,45 @@ const mockLeaderboards = {
         ]
       }
     ]
-  },
-  wca: {
-    '333': [
-      { 
-        rank: 1, 
-        name: 'Alice Johnson', 
-        wcaId: '2020JOHN01', 
-        time: '8.56', 
-        average: '10.78', 
-        competition: 'Texas Championship 2024', 
-        solves: [
-          { time: '10.89', excluded: false },
-          { time: '10.67', excluded: false },
-          { time: '10.78', excluded: false },
-          { time: '8.56', excluded: true },   // fastest (excluded)
-          { time: '12.45', excluded: true }   // slowest (excluded)
-        ]
-      },
-      { 
-        rank: 2, 
-        name: 'Bob Smith', 
-        wcaId: '2019SMIT02', 
-        time: '9.34', 
-        average: '11.45', 
-        competition: 'Austin Open 2024', 
-        solves: [
-          { time: '11.67', excluded: false },
-          { time: '11.23', excluded: false },
-          { time: '11.45', excluded: false },
-          { time: '9.34', excluded: true },   // fastest (excluded)
-          { time: '13.78', excluded: true }   // slowest (excluded)
-        ]
-      },
-      { 
-        rank: 3, 
-        name: 'Carol Davis', 
-        wcaId: '2021DAVI03', 
-        time: '10.12', 
-        average: '12.23', 
-        competition: 'Houston Cube Day 2024', 
-        solves: [
-          { time: '12.45', excluded: false },
-          { time: '12.01', excluded: false },
-          { time: '12.23', excluded: false },
-          { time: '10.12', excluded: true },  // fastest (excluded)
-          { time: '14.89', excluded: true }   // slowest (excluded)
-        ]
-      }
-    ],
-    '222': [
-      { 
-        rank: 1, 
-        name: 'Bob Smith', 
-        wcaId: '2019SMIT02', 
-        time: '2.78', 
-        average: '3.45', 
-        competition: 'Austin Open 2024', 
-        solves: [
-          { time: '3.56', excluded: false },
-          { time: '3.34', excluded: false },
-          { time: '3.45', excluded: false },
-          { time: '2.78', excluded: true },   // fastest (excluded)
-          { time: '4.23', excluded: true }    // slowest (excluded)
-        ]
-      },
-      { 
-        rank: 2, 
-        name: 'Alice Johnson', 
-        wcaId: '2020JOHN01', 
-        time: '3.12', 
-        average: '3.89', 
-        competition: 'Texas Championship 2024', 
-        solves: [
-          { time: '3.78', excluded: false },
-          { time: '4.01', excluded: false },
-          { time: '3.89', excluded: false },
-          { time: '3.12', excluded: true },   // fastest (excluded)
-          { time: '4.67', excluded: true }    // slowest (excluded)
-        ]
-      }
-    ]
   }
 }
 
+import { onMounted } from 'vue'
+import { getLeaderboardRecords } from '@/services/api'
+
+const liveLeaderboards = ref({})
+
+onMounted(async () => {
+  for (const event of wcaEvents) {
+    const { data } = await getLeaderboardRecords(event.id)
+    const single = data.records.Single || []
+    const average = data.records.Average || []
+
+    // Sort by time ascending
+    single.sort((a, b) => a.time - b.time)
+    average.sort((a, b) => a.time - b.time)
+
+    liveLeaderboards.value[event.id] = {
+      single,
+      average
+    }
+  }
+})
+
 const getLeaderboardData = (masterTabId, eventId) => {
-  return mockLeaderboards[masterTabId]?.[eventId] || []
+  if (masterTabId !== 'personal') return []
+  const records = liveLeaderboards.value[eventId]
+  if (!records) return []
+  
+  return records.single.map((rec, index) => ({
+    rank: index + 1,
+    name: rec.name,
+    wcaId: rec.wcaId,
+    time: rec.time,
+    average: records.average.find(r => r.userId === rec.userId)?.time || '–',
+    updated_at: rec.updated_at, // Make sure this field is included from your API
+    solves: []
+  }))
 }
 
 const getCompetitorCount = (masterTabId, eventId) => {
