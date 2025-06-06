@@ -5,6 +5,9 @@
   "scripts": {
     "heroku-postbuild": "cd client && npm install && npm run build"
   },
+  "engines": {
+    "node": ">=18"
+  },
   "author": "Matthew Siegel",
   "license": "MIT",
   "bugs": {
