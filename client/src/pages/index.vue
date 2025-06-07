@@ -240,6 +240,11 @@ const wcaEvents = [
     icon: 'mdi-hand-back-left'
   },
   {
+    id: '333bf',
+    name: '3x3 Blindfolded',
+    icon: 'mdi-eye-off'
+  },
+  {
     id: 'pyram',
     name: 'Pyraminx',
     icon: 'mdi-triangle-outline'
