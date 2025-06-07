@@ -261,13 +261,23 @@ const wcaEvents = [
   },
   {
     id: 'sq1',
-    name: 'Square 1',
+    name: 'Square-1',
     icon: 'mdi-square-off'
   },
   {
     id: 'minx',
     name: 'Megaminx',
     icon: 'mdi-hexagon-outline'
+  },
+  {
+    id: '444bf',
+    name: '4x4 Blindfolded',
+    icon: 'mdi-eye-off-outline'
+  },
+  {
+    id: '555bf',
+    name: '5x5 Blindfolded',
+    icon: 'mdi-eye-off'
   }
 ]
 
