@@ -72,7 +72,7 @@
                 <v-text-field
                   v-model="records[event.id].single"
                     
-                    :placeholder="['333bf', '555', '666', '777', 'minx'].includes(event.id) ? 'e.g. 1:23.45' : 'e.g. 12.34'"
+                    :placeholder="['333bf', '444bf', '55bf', '555', '666', '777', 'minx'].includes(event.id) ? 'e.g. 1:23.45' : 'e.g. 12.34'"
                   dense
                   hide-details
                   outlined
@@ -81,7 +81,7 @@
               <v-col cols="12" md="4">
                 <v-text-field
                   v-model="records[event.id].average"
-                  :placeholder="['333bf', '555', '666', '777', 'minx'].includes(event.id) ? 'e.g. 1:23.45' : 'e.g. 15.67'"
+                  :placeholder="['333bf', '444bf', '55bf','555', '666', '777', 'minx'].includes(event.id) ? 'e.g. 1:23.45' : 'e.g. 15.67'"
                   dense
                   hide-details
                   outlined
@@ -152,7 +152,9 @@ const wcaEvents = [
   { id: 'skewb', name: 'Skewb', icon: 'mdi-rhombus-outline' },
   { id: 'clock', name: 'Clock', icon: 'mdi-clock-outline' },
   { id: 'sq1', name: 'Square 1', icon: 'mdi-square-off' },
-  { id: 'minx', name: 'Megaminx', icon: 'mdi-hexagon-outline' }
+  { id: 'minx', name: 'Megaminx', icon: 'mdi-hexagon-outline' },
+  { id: '444bf', name: '4x4 Blindfolded', icon: 'mdi-eye-off-outline' },
+  { id: '555bf', name: '5x5 Blindfolded', icon: 'mdi-eye-off' }
 ]
 
 // Helper functions to avoid direct v-model on nested reactive objects
