@@ -9,15 +9,13 @@ module.exports = {
     }
   },
   production: {
-    client: 'pg',
+    client: 'postgresql',
     connection: {
-      connectionString: process.env.DATABASE_URL + '?sslmode=require',
-      ssl: {
-        rejectUnauthorized: false,
-      },
+      connectionString: process.env.DATABASE_URL,
+      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
     },
     migrations: {
-      tableName: 'knex_migrations'
+      directory: './migrations'
     }
   }
 };
