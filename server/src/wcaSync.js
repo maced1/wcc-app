@@ -64,18 +64,20 @@ async function syncWcaRecordsForUser(user) {
 
 // To sync all users with a WCA ID
 async function syncAllUsers() {
-  const users = await knex('users').whereNotNull('wca_id')
-  console.log('Found users:', users.map(u => u.wca_id))
+  const users = await knex('users').whereNotNull('wca_id');
+  console.log('Found users:', users.map(u => u.wca_id));
   for (const user of users) {
-    console.log(`Attempting sync for ${user.wca_id}`)
-    await syncWcaRecordsForUser(user)
+    console.log(`Attempting sync for ${user.wca_id}`);
+    await syncWcaRecordsForUser(user);
   }
-  process.exit(0)
+  // Remove process.exit(0) from here
 }
 
 // Run if this script is called directly (node wcaSync.js)
 if (require.main === module) {
-  syncAllUsers()
+  syncAllUsers().then(() => process.exit(0));
 }
+
+
 
 module.exports = { syncAllUsers };

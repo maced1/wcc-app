@@ -68,9 +68,11 @@
                 <span class="font-weight-medium">{{ event.name }}</span>
               </v-col>
               <v-col cols="12" md="4">
+                <!-- update this placeholder when adding more events -->
                 <v-text-field
                   v-model="records[event.id].single"
-                  placeholder="e.g. 12.34"
+                    
+                    :placeholder="['555', '666', '777', 'minx'].includes(event.id) ? 'e.g. 1:23.45' : 'e.g. 12.34'"
                   dense
                   hide-details
                   outlined
@@ -79,7 +81,7 @@
               <v-col cols="12" md="4">
                 <v-text-field
                   v-model="records[event.id].average"
-                  placeholder="e.g. 15.67"
+                  :placeholder="['444', '555', '666', '777', 'minx'].includes(event.id) ? 'e.g. 1:23.45' : 'e.g. 15.67'"
                   dense
                   hide-details
                   outlined
@@ -249,25 +251,54 @@ async function saveUserInfo() {
   }
 }
 
+//helper function
+function parseTimeToMs(timeStr) {
+  if (!timeStr) return null;
+
+  // Remove whitespace
+  timeStr = timeStr.trim();
+
+  // Check for MM:SS.dd format
+  if (timeStr.includes(':')) {
+    const [minStr, secStr] = timeStr.split(':');
+    const minutes = parseInt(minStr, 10) || 0;
+    const seconds = parseFloat(secStr) || 0;
+    //console.log("time in ms " + Math.round((minutes * 60 + seconds) * 1000));
+    return Math.round((minutes * 60 + seconds) * 1000);
+  } else {
+    // SS.dd only
+    const seconds = parseFloat(timeStr) || 0;
+    return Math.round(seconds * 1000);
+  }
+}
+
 async function saveRecords() {
   try {
     savingRecords.value = true
 
-    //console.log('Sending token:', localStorage.getItem('token'))
     for (const [eventCode, record] of Object.entries(records)) {
-      if (record.single && !isNaN(record.single)) {
-        await updatePersonalRecord(userId, {
-          event_code: eventCode,
-          record_type: 'Single',
-          best_time_ms: Math.round(parseFloat(record.single) * 1000)  // s to ms
-        })
+      // Check if single time exists and is not empty
+      if (record.single && record.single.trim() !== '') {
+        const singleTimeMs = parseTimeToMs(record.single)
+        if (singleTimeMs !== null) {  // Only proceed if parsing was successful
+          await updatePersonalRecord(userId, {
+            event_code: eventCode,
+            record_type: 'Single',
+            best_time_ms: singleTimeMs
+          })
+        }
       }
-      if (record.average && !isNaN(record.average)) {
-        await updatePersonalRecord(userId, {
-          event_code: eventCode,
-          record_type: 'Average',
-          best_time_ms: Math.round(parseFloat(record.average) * 1000)
-        })
+      
+      // Check if average time exists and is not empty
+      if (record.average && record.average.trim() !== '') {
+        const averageTimeMs = parseTimeToMs(record.average)
+        if (averageTimeMs !== null) {  // Only proceed if parsing was successful
+          await updatePersonalRecord(userId, {
+            event_code: eventCode,
+            record_type: 'Average',
+            best_time_ms: averageTimeMs
+          })
+        }
       }
     }
     alert("Your records have been saved!");
