@@ -72,7 +72,7 @@
                 <v-text-field
                   v-model="records[event.id].single"
                     
-                    :placeholder="['555', '666', '777', 'minx'].includes(event.id) ? 'e.g. 1:23.45' : 'e.g. 12.34'"
+                    :placeholder="['333bf', '555', '666', '777', 'minx'].includes(event.id) ? 'e.g. 1:23.45' : 'e.g. 12.34'"
                   dense
                   hide-details
                   outlined
@@ -81,7 +81,7 @@
               <v-col cols="12" md="4">
                 <v-text-field
                   v-model="records[event.id].average"
-                  :placeholder="['444', '555', '666', '777', 'minx'].includes(event.id) ? 'e.g. 1:23.45' : 'e.g. 15.67'"
+                  :placeholder="['333bf', '555', '666', '777', 'minx'].includes(event.id) ? 'e.g. 1:23.45' : 'e.g. 15.67'"
                   dense
                   hide-details
                   outlined
@@ -147,6 +147,7 @@ const wcaEvents = [
   { id: '666', name: '6x6', icon: 'mdi-cube-outline' },
   { id: '777', name: '7x7', icon: 'mdi-cube-outline' },
   { id: '333oh', name: '3x3 One-Handed', icon: 'mdi-hand-back-left' },
+  { id: '333bf', name: '3x3 Blindfolded', icon: 'mdi-eye-off' },
   { id: 'pyram', name: 'Pyraminx', icon: 'mdi-triangle-outline' },
   { id: 'skewb', name: 'Skewb', icon: 'mdi-rhombus-outline' },
   { id: 'clock', name: 'Clock', icon: 'mdi-clock-outline' },
