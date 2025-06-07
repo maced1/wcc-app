@@ -333,9 +333,9 @@ const getTableHeaders = (masterTabId) => {
     )
   } else {
     baseHeaders.push(
-      { title: 'Date Updated', key: 'single_date', sortable: true, width: '130px' },
+      { title: 'Last Updated', key: 'single_date', sortable: true, width: '130px' },
       { title: 'Average', key: 'average', sortable: true, width: '120px' },
-      { title: 'Date Updated', key: 'average_date', sortable: true, width: '130px' }
+      { title: 'Last Updated', key: 'average_date', sortable: true, width: '130px' }
     )
   }
   

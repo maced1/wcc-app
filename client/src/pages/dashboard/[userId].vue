@@ -130,6 +130,8 @@ const userForm = reactive({
 })
 
 const records = reactive({})
+// Store original values to compare against
+const originalRecords = reactive({})
 
 const collegeYears = [
   'First Year', 
@@ -157,6 +159,21 @@ const wcaEvents = [
   { id: '555bf', name: '5x5 Blindfolded', icon: 'mdi-eye-off' }
 ]
 
+// Helper function to convert milliseconds back to display format
+function msToTimeString(timeMs) {
+  if (!timeMs) return ''
+  
+  const totalSeconds = timeMs / 1000
+  const minutes = Math.floor(totalSeconds / 60)
+  const seconds = totalSeconds % 60
+  
+  if (minutes > 0) {
+    return `${minutes}:${seconds.toFixed(2).padStart(5, '0')}`
+  } else {
+    return seconds.toFixed(2)
+  }
+}
+
 // Helper functions to avoid direct v-model on nested reactive objects
 const getRecordValue = (eventId, type) => {
   return records.value[eventId]?.[type] || ''
@@ -174,6 +191,7 @@ onMounted(async () => {
     // Initialize records structure first
     wcaEvents.forEach(event => {
       records[event.id] = { single: '', average: '' }
+      originalRecords[event.id] = { single: '', average: '' }
     })
 
     // Load user data
@@ -216,14 +234,17 @@ onMounted(async () => {
 
         if (!records[event_code]) {
           records[event_code] = { single: '', average: '' }
+          originalRecords[event_code] = { single: '', average: '' }
         }
 
-        const timeInSeconds = (best_time_ms / 1000).toFixed(2)
+        const timeString = msToTimeString(best_time_ms)
 
         if (record_type === 'Single') {
-          records[event_code].single = timeInSeconds
+          records[event_code].single = timeString
+          originalRecords[event_code].single = timeString
         } else if (record_type === 'Average') {
-          records[event_code].average = timeInSeconds
+          records[event_code].average = timeString
+          originalRecords[event_code].average = timeString
         }
       })
     }
@@ -275,41 +296,80 @@ function parseTimeToMs(timeStr) {
   }
 }
 
+// Helper function to normalize time strings for comparison
+function normalizeTimeString(timeStr) {
+  if (!timeStr || timeStr.trim() === '') return ''
+  return timeStr.trim()
+}
+
+// Helper function to check if a time has changed
+function hasTimeChanged(currentTime, originalTime) {
+  const normalizedCurrent = normalizeTimeString(currentTime)
+  const normalizedOriginal = normalizeTimeString(originalTime)
+  return normalizedCurrent !== normalizedOriginal
+}
+
 async function saveRecords() {
   try {
     savingRecords.value = true
+    let updatedCount = 0
 
     for (const [eventCode, record] of Object.entries(records)) {
-      // Check if single time exists and is not empty
-      if (record.single && record.single.trim() !== '') {
-        const singleTimeMs = parseTimeToMs(record.single)
-        if (singleTimeMs !== null) {  // Only proceed if parsing was successful
-          await updatePersonalRecord(userId, {
-            event_code: eventCode,
-            record_type: 'Single',
-            best_time_ms: singleTimeMs
-          })
+      const originalRecord = originalRecords[eventCode] || { single: '', average: '' }
+      
+      // Check if single time has changed
+      if (hasTimeChanged(record.single, originalRecord.single)) {
+        if (record.single && record.single.trim() !== '') {
+          const singleTimeMs = parseTimeToMs(record.single)
+          if (singleTimeMs !== null) {
+            await updatePersonalRecord(userId, {
+              event_code: eventCode,
+              record_type: 'Single',
+              best_time_ms: singleTimeMs
+            })
+            // Update the original value after successful save
+            originalRecords[eventCode].single = record.single
+            updatedCount++
+            console.log(`Updated ${eventCode} single: ${record.single}`)
+          }
+        } else if (originalRecord.single !== '') {
+          // Handle case where user cleared a previously set time
+          // You might want to call a delete API or set to null depending on your backend
+          console.log(`Cleared ${eventCode} single time`)
         }
       }
       
-      // Check if average time exists and is not empty
-      if (record.average && record.average.trim() !== '') {
-        const averageTimeMs = parseTimeToMs(record.average)
-        if (averageTimeMs !== null) {  // Only proceed if parsing was successful
-          await updatePersonalRecord(userId, {
-            event_code: eventCode,
-            record_type: 'Average',
-            best_time_ms: averageTimeMs
-          })
+      // Check if average time has changed
+      if (hasTimeChanged(record.average, originalRecord.average)) {
+        if (record.average && record.average.trim() !== '') {
+          const averageTimeMs = parseTimeToMs(record.average)
+          if (averageTimeMs !== null) {
+            await updatePersonalRecord(userId, {
+              event_code: eventCode,
+              record_type: 'Average',
+              best_time_ms: averageTimeMs
+            })
+            // Update the original value after successful save
+            originalRecords[eventCode].average = record.average
+            updatedCount++
+            console.log(`Updated ${eventCode} average: ${record.average}`)
+          }
+        } else if (originalRecord.average !== '') {
+          // Handle case where user cleared a previously set time
+          console.log(`Cleared ${eventCode} average time`)
         }
       }
     }
-    alert("Your records have been saved!");
+    
+    if (updatedCount > 0) {
+      alert(`${updatedCount} record(s) have been updated!`)
+    } else {
+      alert("No changes detected - nothing to update.")
+    }
   } catch (error) {
     console.error('Error saving records:', error)
   } finally {
     savingRecords.value = false
   }
 }
-
 </script>
