@@ -68,9 +68,11 @@
                 <span class="font-weight-medium">{{ event.name }}</span>
               </v-col>
               <v-col cols="12" md="4">
+                <!-- update this placeholder when adding more events -->
                 <v-text-field
                   v-model="records[event.id].single"
-                  placeholder="e.g. 12.34"
+                    
+                    :placeholder="['555', '666', '777', 'minx'].includes(event.id) ? 'e.g. 1:23.45' : 'e.g. 12.34'"
                   dense
                   hide-details
                   outlined
@@ -79,7 +81,7 @@
               <v-col cols="12" md="4">
                 <v-text-field
                   v-model="records[event.id].average"
-                  placeholder="e.g. 15.67"
+                  :placeholder="['444', '555', '666', '777', 'minx'].includes(event.id) ? 'e.g. 1:23.45' : 'e.g. 15.67'"
                   dense
                   hide-details
                   outlined
