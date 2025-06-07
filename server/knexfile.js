@@ -1,24 +1,19 @@
-/**
- * @type { Object.<string, import("knex").Knex.Config> }
- */
+require('dotenv').config(); // <--- Add this at the top
+
 module.exports = {
   development: {
-    client: 'sqlite3',
-    connection: {
-      filename: './dev.sqlite3'
-    },
-    useNullAsDefault: true,
+    client: 'postgresql',
+    connection: process.env.DATABASE_URL, // <--- Use env for dev too
     migrations: {
-      directory: './migrations'
+      tableName: 'knex_migrations'
     }
   },
-
   production: {
-    client: 'sqlite3',
+    client: 'postgresql',
     connection: {
-      filename: './prod.sqlite3'  // separate file for production
+      connectionString: process.env.DATABASE_URL,
+      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
     },
-    useNullAsDefault: true,
     migrations: {
       directory: './migrations'
     }

@@ -5,60 +5,49 @@ const router = express.Router();
 
 const authenticate = require('../middleware/auth')
 
-// POST /api/records/:user_id
+// POST /api/records/user/:user_id
 router.post('/user/:user_id', authenticate, async (req, res) => {
-  console.log('POST /user/:user_id route hit')
   const { user_id } = req.params;
   const { event_code, best_time_ms, record_type } = req.body;
-
   if (!event_code || best_time_ms == null || !record_type) {
     return res.status(400).json({ error: 'event_code, best_time_ms, and record_type are required.' });
   }
-
   if (!['Single', 'Average'].includes(record_type)) {
     return res.status(400).json({ error: 'Invalid record_type. Must be "Single" or "Average".' });
   }
-
   try {
-    // Verify user exists
     const user = await knex('users').where({ id: user_id }).first();
     if (!user) {
       return res.status(404).json({ error: 'User not found.' });
     }
-
-    // Check if record already exists
     const existingRecord = await knex('personal_records')
       .where({ user_id, event_code, record_type })
       .first();
-
     let record;
-
     if (existingRecord) {
-      // Update existing record
       await knex('personal_records')
         .where({ id: existingRecord.id })
         .update({ best_time_ms, updated_at: knex.fn.now() });
-
       record = await knex('personal_records').where({ id: existingRecord.id }).first();
     } else {
-      // Insert new record
-      const [id] = await knex('personal_records').insert({
-        user_id,
-        event_code,
-        best_time_ms,
-        record_type,
-        created_at: knex.fn.now()
-      });
-
+      const [{ id }] = await knex('personal_records')
+        .insert({
+          user_id,
+          event_code,
+          best_time_ms,
+          record_type,
+          created_at: knex.fn.now()
+        })
+        .returning('id');
       record = await knex('personal_records').where({ id }).first();
     }
-
     return res.status(200).json({ record });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: 'Server error when saving personal record.' });
   }
 });
+
 
 // // GET /api/records/:event_code
 // // Returns all records for a specific event, ordered by best_time_ms ascending
