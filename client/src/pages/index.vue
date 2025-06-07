@@ -268,30 +268,27 @@ const wcaEvents = [
 
 // Date formatting function (Eastern Time)
 const formatDate = (utcString) => {
-  if (!utcString){
-    return ''
-  } else {
-    const date = new Date(utcString + 'Z') // Add 'Z' to force UTC interpretation
-    return date.toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      timeZone: 'America/New_York'
-    })
-  }
-}
+  if (!utcString) return '';
+  const date = new Date(utcString); // No extra 'Z'
+  return date.toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'America/New_York'
+  });
+};
 
-// Time formatting function (Eastern Time)
 const formatTime = (utcString) => {
-  if (!utcString) return ''
-  const date = new Date(utcString + 'Z') // Ensure UTC format
+  if (!utcString) return '';
+  const date = new Date(utcString);
   return date.toLocaleTimeString('en-US', {
     hour: '2-digit',
     minute: '2-digit',
     hour12: true,
     timeZone: 'America/New_York'
-  })
-}
+  });
+};
+
 
 function formatResultTime(seconds) {
   if (seconds == null || seconds === '' || isNaN(seconds)) return ''

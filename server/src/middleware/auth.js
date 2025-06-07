@@ -3,8 +3,8 @@ const jwt = require('jsonwebtoken')
 const SECRET = process.env.JWT_SECRET || 'your_super_secret_key'
 
 function authenticate(req, res, next) {
-  console.log('JWT_SECRET from env:', process.env.JWT_SECRET)
-  console.log('SECRET being used:', SECRET)
+  // console.log('JWT_SECRET from env:', process.env.JWT_SECRET)
+  // console.log('SECRET being used:', SECRET)
   
   const authHeader = req.headers.authorization
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
